@@ -1,14 +1,13 @@
 import os
 import math
 def tokenize(token):
-    punc  = ['።', '::', '፣', '፡', '፤', '፨', '?', '""', '!', '{', '}', '[', ']', '!', ',']
+    punc  = ['።', '::', '፣', '፡', '፤', '፨', '？','?', '""', '!', '{', '}', '[', ']', ',',".",")","(","፦","#","=","+","*","'","”","’","/","-","“"]
     for i in punc:
         token = token.replace(i,'')
         token = token.strip()
     return token
 def stopword(stoplist):
-    stop = open('C:/Users/TeklayB/OneDrive/Teklay Datas/Notes/Python/Tigrinya Search engien/stopwords.txt', 'r',encoding='utf-8')
-    stop = stop.read()
+    stop = open('D:/Teklay Datas/Notes/ML/Tigrinya Search engien/stopwords.txt', 'r',encoding='utf-8').read()
     stop = stop.split()
     for w in stop:
         stoplist = stoplist.replace(w,"")
@@ -29,20 +28,33 @@ def normalize(norm):
     return norm
 
 def stemming(text):
-    tp=['ብ','ን','እ']
-    for i in tp:
-        if text.startswith(i):
-            text=text.replace(text[0:1],'')
+    pre = open('D:/Teklay Datas/Notes/ML/Tigrinya Search engien/prefix.txt','r', encoding='utf-8').read()
+    pre = pre.split()
+    suf = open('D:/Teklay Datas/Notes/ML/Tigrinya Search engien/sufix.txt','r', encoding='utf-8').read()
+    suf = suf.split()
+
+    for n in range(0,len(text)):
+        for i in range(0,len(pre)-1):
+            if(len(text)>2):
+                if(text.startswith(pre[i])):
+                    text=tex.replace(pre[i],'')
+                    i=len(pre)
+        for j in range(0,len(suf)-1):
+            if(len(text)>2):
+                if(text.endswith(suf[j])):
+                    text=text.replace(suf[j],'')
+                    j=len(suf)
     return text
-doc = os.chdir('Tigrinya corpus')
+doc = os.chdir('Tigrigna Corpus')
 #string=''
 #stem=[]
 #mystr=''
 query =input('ኣልሽ:')
-q=open('C:/Users/TeklayB/OneDrive/Teklay Datas/Notes/Python/Tigrinya Search engien/query.txt','w',encoding='utf-8')
+while query =='':
+    query =input('በይዘኦም/ኣን ሕቶኦም ብትክክል ይፅሓፉ:')
+q=open('D:/Teklay Datas/Notes/ML/Tigrinya Search engien/query.txt','w',encoding='utf-8')
 q.write(query)
 q.close()
-
 def wordfreq(files):
     #print (files)
     dict0={}
@@ -64,11 +76,11 @@ def ndoc():
     return c
 def tfidf():
     N=ndoc()
-    v=open('C:/Users/TeklayB/OneDrive/Teklay Datas/Notes/Python/Tigrinya Search engien/Vocabulary File.txt','r',encoding='utf-8')
+    v=open('D:/Teklay Datas/Notes/ML/Tigrinya Search engien/Vocabulary File.txt','r',encoding='utf-8')
     v=v.readlines()
     del v[0]
     #print(v)
-    p=open('C:/Users/TeklayB/OneDrive/Teklay Datas/Notes/Python/Tigrinya Search engien/Post File.txt','r',encoding='utf-8')
+    p=open('D:/Teklay Datas/Notes/ML/Tigrinya Search engien/Post File.txt','r',encoding='utf-8')
     p=p.readlines()
     del p[0]
     #print(p)
@@ -99,37 +111,33 @@ def tfidf():
                 dic[st]=idf
                 #print(dic[st])
     return dic
-qr=open('C:/Users/TeklayB/OneDrive/Teklay Datas/Notes/Python/Tigrinya Search engien/query.txt','r', encoding='utf-8')
-search=qr.read()
+search=open('D:/Teklay Datas/Notes/ML/Tigrinya Search engien/query.txt','r', encoding='utf-8').read()
 print(search)
-if search=='':
- print ('your query is not significant term please try again:')
-else:
-    search = tokenize(search)
-    search = normalize(search)
-    search = stopword(search)
-    search=stemming(search)# Stemming
-    search=search.split()
-    ff=open('C:/Users/TeklayB/OneDrive/Teklay Datas/Notes/Python/Tigrinya Search engien/Vocabulary File.txt','r',encoding='utf-8')
-    read=ff.read()
-    read=read.split()
-    def docfreq_query():
+search = tokenize(search)
+search = normalize(search)
+search = stopword(search)
+search=stemming(search)# Stemming
+search=search.split()
+ff=open('D:/Teklay Datas/Notes/ML/Tigrinya Search engien/Vocabulary File.txt','r',encoding='utf-8').read()
+read=ff.split()
+#if search !='':
+def docfreq_query():
         dic={}
         dic2={}
         for word in search:
             df=0
             li=[]
             for files in os.listdir(doc):
-                f=open(files,'r',encoding='utf-8')
-                read1=f.read()
-                if word in read1:
+                f=open(files,'r',encoding='utf-8').read()
+                if word in f:
                     df=df+1
                     dic[word]=df
         return dic,df,word# returns df of the vocabulary word
 x,y,z=docfreq_query()
+#print()
 d={}
 tf=1
-NN=()
+NN=ndoc()
 if y!=0:
     fl=float(NN)/float(y)
     idf=math.log(fl,2)
@@ -137,9 +145,11 @@ if y!=0:
     w=we*idf
     d[z]=w
 #else:
-#     print ("ይቅሬታ  ዝተረከበ መረዳእታ የለን")
+#    print ("ይቅሬታ  ዝተረከበ መረዳእታ የለን")
+
 weight=tfidf()
 query=d
+#print(query)
 sim={}
 for key in query:
     for docword in weight:
@@ -158,7 +168,15 @@ items.reverse() # so largest is first
 items = [(k, v) for v, k in items]
 i=1
 print('ብመሰረት ቃላ መሕተት ዝተረከቡ ጠቀምቲ ፋይላት እዞም ዝስዕቡ እዮም')
+print('<><><><><><><><><><><><><><><>')
+print('Rank\t\tSim. \t\t \t\tDoc#')
 for x in items:
-    print('Rank\tSim.')
-    print (i,'.',x[1],'------------>', x[0])
+    print (i,'.\t',x[1],'------------>\t', x[0])
     i=i+1
+for y in items:
+    i= input ("እቲ ፋይል ንምክፋት ትሕዝቶ ቁፅሪ የእትው：")
+    y=y[0]
+    z=open(y,'r',encoding='utf-8').read()
+    print(z)
+    
+    

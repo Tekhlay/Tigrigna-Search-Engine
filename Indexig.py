@@ -1,16 +1,16 @@
 import os
 def tokenize(token):
-    punc  = ['።', '::', '፣', '፡', '፤', '፨', '?', '""', '!', '{', '}', '[', ']', '!', ',']
+    punc  = ['።', '::', '፣', '፡', '፤', '፨', '?', '""', '!', '{', '}', '[', ']', ',',".",")","(","፦","#","=","+","*","'","”","’","/","-","“"]
     for i in punc:
-        token = token.replace(i,'')
-        token = token.strip()
+        #token = token.strip()
+        token = token.replace(i,'').strip()
+        
     return token
 def stopword(stoplist):
-    stop = open('C:/Users/TeklayB/OneDrive/Teklay Datas/Notes/Python/Tigrinya Search engien/stopwords.txt', 'r',encoding='utf-8')
-    stop = stop.read()
+    stop = open('D:/Teklay Datas/Notes/ML/Tigrinya Search engien/stopwords.txt', 'r',encoding='utf-8').read()
     stop = stop.split()
     for w in stop:
-        stoplist = stoplist.replace(w,"")
+        stoplist = stoplist.replace(w,'')
         #print(s_w)
     return stoplist
     stop.close()
@@ -28,19 +28,41 @@ def normalize(norm):
     return norm
 
 def stemming(text):
-    tp=['ብ','ን','እ']
-    for i in tp:
-        if text.startswith(i):
-            text=text.replace(text[0:1],'')
+    pre = open('D:/Teklay Datas/Notes/ML/Tigrinya Search engien/prefix.txt','r', encoding='utf-8').read()
+    pre = pre.split()
+    suf = open('D:/Teklay Datas/Notes/ML/Tigrinya Search engien/sufix.txt','r', encoding='utf-8').read()
+    suf = suf.split()
+
+    for n in range(0,len(text)):
+        for i in range(0,len(pre)-1):
+            if(len(text)>2):
+                if(text.startswith(pre[i])):
+                    text=tex.replace(pre[i],'')
+                    i=len(pre)
+        for j in range(0,len(suf)-1):
+            if(len(text)>2):
+                if(text.endswith(suf[j])):
+                    text=text.replace(suf[j],'')
+                    j=len(suf)
+        
+    '''for i in pre:
+        if len(text)>2:
+            if text.startswith(i):
+                text=text.replace(i,'')
+    for j in suf:
+        if text.endswith(j):
+            text=text.replace(text[-(len(j)):-1],'')
+   # pre.close()
+   # suf.close()'''
     return text
-doc = os.chdir('Tigrinya corpus')
+doc = os.chdir('Tigrigna Corpus')
+#print(doc)
 stem=[]
 mystr=''
-name='C:/Users/TeklayB/OneDrive/Teklay Datas/Notes/Python/Tigrinya Search engien/stemmed.txt'
+name='D:/Teklay Datas/Notes/ML/Tigrinya Search engien/stemmed.txt'
 for documents in os.listdir(doc):
-    file = open(documents,'r',encoding="utf-8")
-    read = file.read()
-    normal = normalize(read)
+    file = open(documents,'r',encoding="utf-8").read()
+    normal = normalize(file)
     #print(normal)
     token = tokenize(normal)
     #print(token)
@@ -49,6 +71,7 @@ for documents in os.listdir(doc):
     stemmed=stemming(stop_word)# Stemming
     #print(stemmed)
     stemmed=stemmed.replace('\n','')
+    stemmed=stemmed.replace('\ufeff','')
     stem.append(stemmed)
     #print(stem)
 #print(stem)
@@ -64,7 +87,7 @@ for x in stem:
 
 
 
-kWF = open('C:/Users/TeklayB/OneDrive/Teklay Datas/Notes/Python/Tigrinya Search engien/stemmed.txt','r', encoding="utf-8")
+kWF = open('D:/Teklay Datas/Notes/ML/Tigrinya Search engien/stemmed.txt','r', encoding="utf-8")
 keywordFile = kWF.read()
 keywordFile = keywordFile.replace('\n','')
 document = keywordFile.split()
@@ -134,7 +157,7 @@ def colf():
     return dict1
 #print(colf())
 def voc():
-    voc =open('C:/Users/TeklayB/OneDrive/Teklay Datas/Notes/Python/Tigrinya Search engien/Vocabulary File.txt','w',encoding='utf-8')
+    voc =open('D:/Teklay Datas/Notes/ML/Tigrinya Search engien/Vocabulary File.txt','w',encoding='utf-8')
     voc.write("Term")
     voc.write('\t')
     voc.write("Df")
@@ -159,7 +182,7 @@ def voc():
 voc()
 
 def post():
-    fi=open('C:/Users/TeklayB/OneDrive/Teklay Datas/Notes/Python/Tigrinya Search engien/Post File.txt','w',encoding='utf-8')
+    fi=open('D:/Teklay Datas/Notes/ML/Tigrinya Search engien/Post File.txt','w',encoding='utf-8')
     fi.write("Term")
     fi.write('\t')
     fi.write("Document#")
